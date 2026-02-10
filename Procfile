@@ -1,1 +1,1 @@
-web: gunicorn valentine_project.wsgi
+web: gunicorn my_valentine.wsgi

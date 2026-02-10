@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Question for You ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 1. Background Animation */
+        body {
+            background: linear-gradient(120deg, #fdf2f8, #fce7f3);
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* 2. Flying Emojis Animation */
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+        
+        .flying-emoji {
+            position: fixed;
+            bottom: -50px;
+            font-size: 2rem;
+            animation: floatUp 6s linear forwards;
+            pointer-events: none; /* He can click through them */
+            z-index: 0; 
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center relative">
+
+    <div id="emoji-container"></div>
+
+    <div class="relative z-10 bg-white/60 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/50 text-center max-w-lg w-full mx-4">
+        
+        <h1 class="text-5xl font-extrabold text-pink-600 mb-6 drop-shadow-sm font-serif">
+            Will you be my Valentine?
+        </h1>
+        
+        <p class="text-gray-700 mb-10 text-xl font-medium">
+            I promise to stop coding and pay attention to you! 🥺
+        </p>
+
+        <div class="flex justify-center items-center gap-8 h-20 relative">
+            
+            <button onclick="handleYes()" 
+                    class="bg-pink-500 hover:bg-pink-600 text-white text-2xl font-bold py-4 px-10 rounded-full shadow-xl transform transition hover:scale-110 z-20">
+                YES! 😍
+            </button>
+
+            <button id="noBtn" 
+                    class="bg-gray-400 hover:bg-gray-500 text-white text-xl font-bold py-4 px-10 rounded-full shadow-xl absolute transition-all duration-200 ease-out z-30"
+                    style="left: 60%;">
+                No 😢
+            </button>
+        </div>
+    </div>
+
+    <div id="videoModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl bg-black rounded-xl overflow-hidden shadow-2xl relative border-2 border-pink-500">
+            <button onclick="closeVideo()" class="absolute top-4 right-4 text-white text-4xl hover:text-pink-500 z-50">&times;</button>
+            
+            <div class="aspect-video w-full">
+                <iframe id="videoFrame" 
+                        class="w-full h-full"
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" 
+                        title="Valentine Video" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+            <div class="p-6 bg-gray-900 text-center">
+                <h2 class="text-2xl font-bold text-pink-400 mb-2">Caught you! 😉</h2>
+                <p class="text-white">You tried to say no 4 times... so now you have to watch this!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIC ---
+        const noBtn = document.getElementById('noBtn');
+        const videoModal = document.getElementById('videoModal');
+        const videoFrame = document.getElementById('videoFrame');
+        const emojiContainer = document.getElementById('emoji-container');
+
+        // 1. The "No" Button Counter
+        let attempts = 0;
+        const maxAttempts = 4; // Moves 4 times
+
+        // 2. Flying Emojis Logic
+        const emojis = ['❤️', '💋', '🥰', '🙂', '💖', '💌', '😘'];
+        
+        function spawnEmoji() {
+            const el = document.createElement('div');
+            el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            el.className = 'flying-emoji';
+            el.style.left = Math.random() * 100 + 'vw'; // Random horizontal position
+            el.style.animationDuration = (Math.random() * 3 + 4) + 's'; // Random speed
+            el.style.fontSize = (Math.random() * 2 + 1.5) + 'rem'; // Random size
+            emojiContainer.appendChild(el);
+            
+            // Cleanup memory
+            setTimeout(() => el.remove(), 7000);
+        }
+        setInterval(spawnEmoji, 400); // New emoji every 0.4 seconds
+
+        // 3. The "Run Away" Logic
+        function runAway() {
+            attempts++;
+            if (attempts <= maxAttempts) {
+                // Move random x/y
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
+                
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = x + 'px';
+                noBtn.style.top = y + 'px';
+            } else {
+                // 5th attempt: Pop the video!
+                openVideo();
+            }
+        }
+
+        // Trigger on MouseOver (Desktop) AND Click (Mobile)
+        noBtn.addEventListener('mouseover', runAway);
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            runAway();
+        });
+
+        // 4. Video Controls
+        function openVideo() {
+            videoModal.classList.remove('hidden');
+            // Auto-play hack
+            let src = videoFrame.src;
+            if(!src.includes("autoplay=1")) videoFrame.src = src + "&autoplay=1";
+        }
+        
+        function closeVideo() {
+            videoModal.classList.add('hidden');
+            // Stop video
+            let src = videoFrame.src.replace("&autoplay=1", "");
+            videoFrame.src = src;
+        }
+
+        function handleYes() {
+            // Speed up emojis for celebration
+            setInterval(spawnEmoji, 100);
+            alert("YAY! ❤️ I love you!");
+        }
+    </script>
+</body>
+</html>

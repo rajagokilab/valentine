@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Love ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #fce7f3; 
+            font-family: 'Varela Round', sans-serif; 
+            overflow: hidden; 
+        }
+        
+        /* Flying Hearts Animation */
+        .flying-heart {
+            position: fixed; bottom: -50px; font-size: 2rem;
+            animation: floatUp 4s linear forwards; pointer-events: none; z-index: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col items-center justify-center relative">
+
+    <div id="hearts-container"></div>
+
+    <div id="mainCard" class="z-10 text-center relative w-full max-w-lg p-4">
+        
+        <img id="bearImage" 
+             src="{% static 'media/milk-and-mocha-milk-mocha.gif' %}" 
+             class="w-64 h-64 object-cover mx-auto rounded-xl drop-shadow-sm mb-6 border-4 border-white shadow-lg">
+             
+        <h1 id="questionText" class="text-4xl font-bold text-gray-800 mb-8 tracking-wide drop-shadow-sm">
+            Do you love me?
+        </h1>
+
+        <div id="buttonsContainer" class="flex justify-center gap-8 relative w-full h-32">
+            <button onclick="handleYes()" 
+                    class="bg-pink-500 hover:bg-pink-600 text-white text-xl font-bold py-3 px-12 rounded-full shadow-lg transition transform hover:scale-110 z-20 border-2 border-white">
+                Yes
+            </button>
+
+            <button id="noBtn" 
+                    class="bg-gray-400 text-white text-xl font-bold py-3 px-12 rounded-full shadow-lg absolute transition-all duration-200 z-30 border-2 border-white"
+                    style="left: 60%;">
+                No
+            </button>
+        </div>
+    </div>
+
+    <div id="noVideoModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-white rounded-lg overflow-hidden shadow-2xl relative">
+            <button onclick="closeNoVideo()" class="absolute top-2 right-2 bg-white text-black rounded-full px-2 py-0 font-bold shadow-lg hover:bg-red-500 hover:text-white z-50">X</button>
+            
+            <video id="noVideoPlayer" class="w-full h-auto" controls>
+                <source src="{% static 'media/WhatsApp Video 2026-02-10 at 14.24.26.mp4' %}" type="video/mp4">
+            </video>
+            
+            <div class="p-3 text-center bg-pink-50">
+                <p class="text-pink-600 font-bold text-sm">Caught you! 😉</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="yesVideoModal" class="fixed inset-0 bg-pink-900/90 hidden z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-xs bg-white rounded-lg overflow-visible shadow-2xl relative border-4 border-pink-500">
+            
+            <button onclick="closeYesVideo()" 
+                    class="absolute -top-3 -right-3 bg-red-600 text-white text-sm font-bold w-8 h-8 rounded-full shadow-xl hover:bg-red-700 flex items-center justify-center z-50 border-2 border-white">
+                ✕
+            </button>
+
+            <video id="yesVideoPlayer" class="w-full h-auto rounded-t-lg" controls>
+                <source src="{% static 'media/WhatsApp Video 2026-02-10 at 15.11.13.mp4' %}" type="video/mp4">
+            </video>
+            
+            <div class="p-3 text-center bg-pink-100 rounded-b-lg">
+                <p class="text-pink-600 font-bold text-lg">YAY! I love you! ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ELEMENTS ---
+        const noBtn = document.getElementById('noBtn');
+        const noVideoModal = document.getElementById('noVideoModal');
+        const yesVideoModal = document.getElementById('yesVideoModal');
+        const noVideoPlayer = document.getElementById('noVideoPlayer');
+        const yesVideoPlayer = document.getElementById('yesVideoPlayer');
+        const heartsContainer = document.getElementById('hearts-container');
+        
+        const bearImage = document.getElementById('bearImage');
+        const questionText = document.getElementById('questionText');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+
+        // --- VARIABLES ---
+        let attempts = 0;
+        const maxAttempts = 4; // Moves 4 times
+
+        // --- 1. NO BUTTON LOGIC ---
+        function runAway() {
+            attempts++;
+            if (attempts <= maxAttempts) {
+                // Move button to random position
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 40);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 40);
+                noBtn.style.position = 'fixed'; 
+                noBtn.style.left = x + 'px'; 
+                noBtn.style.top = y + 'px';
+            } else {
+                // 5th Attempt: Show Trap Video
+                noVideoModal.classList.remove('hidden');
+                noVideoPlayer.play(); 
+            }
+        }
+        
+        // Trigger on MouseOver (Desktop) AND Click (Mobile)
+        noBtn.addEventListener('mouseover', runAway);
+        noBtn.addEventListener('click', (e) => { e.preventDefault(); runAway(); });
+
+        // --- 2. YES BUTTON LOGIC ---
+        function handleYes() {
+            // Change image to a hugging gif (Using a reliable web link for the hug since we only have one local file)
+            bearImage.src = "{% static 'media/milk-and-mocha-milk-mocha.gif' %}";
+            
+            // Update Text
+            questionText.innerText = "Yay! I love you too! ❤️";
+            
+            // Hide Buttons
+            buttonsContainer.style.display = 'none';
+
+            // Explode hearts
+            for(let i=0; i<50; i++) setTimeout(spawnHeart, i*30);
+
+            // Wait 1.5 seconds, then show the Yes Video
+            setTimeout(() => {
+                yesVideoModal.classList.remove('hidden');
+                yesVideoPlayer.play();
+            }, 1500);
+        }
+
+        // --- 3. CLOSE FUNCTIONS ---
+        function closeNoVideo() { 
+            noVideoModal.classList.add('hidden'); 
+            noVideoPlayer.pause(); 
+        }
+        function closeYesVideo() { 
+            yesVideoModal.classList.add('hidden'); 
+            yesVideoPlayer.pause(); 
+        }
+
+        // --- 4. HEARTS ANIMATION ---
+        function spawnHeart() {
+            const h = document.createElement('div'); 
+            h.innerText = '❤️'; 
+            h.className = 'flying-heart';
+            h.style.left = Math.random() * 100 + 'vw'; 
+            h.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            heartsContainer.appendChild(h); 
+            setTimeout(() => h.remove(), 4000);
+        }
+        // Spawn a heart every 0.5 seconds automatically
+        setInterval(spawnHeart, 500); 
+    </script>
+</body>
+</html>

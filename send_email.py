@@ -18,7 +18,7 @@ if not settings.configured:
 django.setup()
 
 def send_invitation():
-    husband_email = "rajagokilab@gmail.com"
+    husband_email = "npvivek7191@gmail.com"
     
     # 🔴 PASTE THE LINK YOU GOT FROM THE BLACK TERMINAL HERE 🔴
     # It should look like: "https://v4-123-xyz.localhost.run"
